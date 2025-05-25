@@ -1,71 +1,60 @@
-# Web Search Tools
+# Stock Analysis MCP Server
 
-This project provides a set of tools for web searching and content extraction using FastMCP, integrated with Tavily for web search and crawl4ai for converting URLs to markdown.
+This project is a server built using the `FastMCP` framework, providing various tools for accessing and analyzing stock market data.
 
 ## Features
 
-- **web_search**: Perform web searches using the Tavily API.
-- **url_to_markdown**: Convert the content of a given URL into markdown format using crawl4ai.
+The server exposes the following tools:
 
-## Setup
+*   **Concept Power Tools (`/stock`)**: Analyzes the strength of stock concept sectors based on fund flow and price change.
+*   **Finance Tools (`/finance`)**: Provides access to stock financial core indicators and company information.
+*   **Stock F10 Tools (`/f10`)**: Fetches and summarizes Stock F10 information.
+*   **Market Emotion Tools (`/market`)**: Retrieves and summarizes A-share market emotion indicators.
+*   **Stock Keep Up Tools (`/stockUp`)**: Provides lists of continuous limit-up stocks and limit-up stocks.
+*   **Web Search Tools (Tavily) (`/websearch`)**: Provides a web search tool.
 
-1.  **Clone the repository** (if applicable) or ensure you have the project files.
+## Setup and Installation
 
-2.  **Install dependencies**: Install the required Python packages using pip:
+1.  **Clone the repository:**
 
     ```bash
-    pip install fastmcp tavily-python crawl4ai
+    git clone <repository_url>
+    cd mcp_stock
     ```
 
-3.  **Configuration**: You need API keys for Tavily. Create a `config.py` file in the same directory as `web_search_tools.py` with the following structure:
+2.  **Create a virtual environment (recommended):**
 
-    ```python
-    # config.py
-    config = {
-        'TAVILY_API_KEY': 'YOUR_TAVILY_API_KEY'
-        # Add other configuration here if needed
-    }
+    ```bash
+    python -m venv venv
+    source venv/bin/activate
     ```
 
-    Replace `'YOUR_TAVILY_API_KEY'` with your actual Tavily API key.
+3.  **Install dependencies:**
+
+    Install the required packages using pip:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Configuration:**
+
+    Some tools might require API keys or other configuration. Please refer to the `config.py` file and potentially create a `.env` file if necessary (based on `os.getenv` usage in `server.py`).
+
+5.  **Run the server:**
+
+    You can run the server using the `server.py` script. The server will listen on the port specified by the `PORT` environment variable, defaulting to 9000.
+
+    ```bash
+    python server.py
+    ```
+
+    To run on a specific port:
+
+    ```bash
+    PORT=5000 python server.py
+    ```
 
 ## Usage
 
-Import the `web_search_tools` function and call it to get the tools object. You can then access and use the defined tools.
-
-```python
-import asyncio
-from web_search_tools import web_search_tools
-
-# Get the tools object
-tools = web_search_tools()
-
-# Example: Using the web_search tool (Synchronous)
-# Note: FastMCP handles the asynchronous execution of the tool function.
-search_query = "latest news on AI"
-search_results = tools.web_search(query=search_query)
-print("Search Results:", search_results)
-
-# Example: Using the url_to_markdown tool (Asynchronous under the hood via FastMCP)
-# Note: FastMCP handles the asynchronous execution of the tool function.
-async def main():
-    url_to_convert = "https://docs.crawl4ai.com/core/markdown-generation/"
-    markdown_content = await tools.url_to_markdown(url=url_to_convert)
-    print(f"\nMarkdown content for {url_to_convert}:\n", markdown_content)
-
-if __name__ == "__main__":
-    # In a real FastMCP environment, you wouldn't call asyncio.run() here.
-    # The framework handles the async execution of the tool.
-    # This is just for demonstrating the awaitable call if testing outside the framework.
-    try:
-        asyncio.run(main())
-    except RuntimeError as e:
-        if "cannot be called from a running event loop" in str(e):
-             print("\nRunning within an environment that already has an event loop (like FastMCP).")
-             print("In a real application, just call await tools.url_to_markdown(...) directly.")
-        else:
-            raise
-
-```
-
-**Note on Asynchronous Tools:** The `url_to_markdown` tool is an `async` function. When used within the FastMCP framework, you would directly `await` the tool call. The example above includes `asyncio.run(main())` and error handling for demonstration purposes if you are trying to run the script directly in a standard Python environment, but this is not how it would be used within FastMCP. 
+Once the server is running, you can interact with the tools via the `/mcp` prefix followed by the tool's mount path (e.g., `/mcp/stock`, `/mcp/finance`). The specific endpoints and expected parameters for each tool can be found by examining the tool definitions within each tool's Python file. 
