@@ -1,6 +1,8 @@
+import asyncio
 from tavily import TavilyClient
 from fastmcp import FastMCP
 from config import config
+from crawl4ai import AsyncWebCrawler, CrawlerRunConfig, DefaultMarkdownGenerator
 
 mcp = FastMCP('tavily')
 
@@ -29,5 +31,29 @@ def web_search_tools():
             structured_output_schema=None,  # must be filled if output_type is "structured"
         )
         return search_response
+
+    @mcp.tool()
+    async def url_to_markdown(url: str) -> str:
+        """Use crawl4ai to convert a URL to markdown, focusing on body content.
+
+        Args:
+            url: The URL to convert.
+        """
+        config = CrawlerRunConfig(
+            markdown_generator=DefaultMarkdownGenerator(
+                content_source="fit_html",  # This is the default
+                options={"ignore_links": False}
+            )
+        )
+        async with AsyncWebCrawler() as crawler:
+            result = await crawler.arun(url=url, config=config)
+            if result.success:
+                # Check if result.markdown is None or empty
+                if result.markdown:
+                    return result.markdown
+                else:
+                    return f"Crawl successful for {url}, but no markdown content was generated."
+            else:
+                return f"Error crawling {url}: {result.error_message}"
 
     return mcp
