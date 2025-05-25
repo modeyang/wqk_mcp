@@ -35,24 +35,28 @@ The server exposes the following tools:
 
     ```bash
     pip install -r requirements.txt
+    playwright install
     ```
 
 4.  **Configuration:**
 
     Some tools might require API keys or other configuration. Please refer to the `config.py` file and potentially create a `.env` file if necessary (based on `os.getenv` usage in `server.py`).
+    ```
+    TAVILY_API_KEY=
+    ```
 
 5.  **Run the server:**
 
-    You can run the server using the `server.py` script. The server will listen on the port specified by the `PORT` environment variable, defaulting to 9000.
+    You can run the server using the `server.py` script. The server will listen on the port specified by the `PORT` environment variable, defaulting to 8000.
 
     ```bash
-    python server.py
+    fastmcp run server.py --transport=sse --port=8000 --host=0.0.0.0
     ```
 
     To run on a specific port:
 
     ```bash
-    PORT=5000 python server.py
+    fastmcp run server.py --transport=sse --port=8000 --host=0.0.0.0
     ```
 
 ## Usage
