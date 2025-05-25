@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   web:
+    # image: whd1073363531/mcp_stock-web:latest
     build: .
     ports:
       - "8012:8000" 
