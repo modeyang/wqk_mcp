@@ -8,7 +8,7 @@ from amarket_emotion_tools import register_market_tools
 from stock_keep_up_tool import register_stock_keep_up_tools
 from web_search_tools import web_search_tools
 
-mcp = FastMCP(prefix="/mcp")
+mcp = FastMCP()
 
 # 概念股
 mcp.mount('/stock', register_concept_power_tools())
@@ -30,5 +30,5 @@ mcp.mount('/websearch', web_search_tools())
 
 if __name__ == "__main__":
     # Get port from environment variables, default to 9000 if not set
-    port = int(os.getenv("PORT", 9000))
-    mcp.run(transport="sse", port=port)
+    port = int(os.getenv("PORT", 9001))
+    mcp.run(transport="http", port=port)

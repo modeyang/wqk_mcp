@@ -1,8 +1,8 @@
 dev:
-	python server.py
+	uv run python server.py
 
 save_requirement:
-	pip freeze > requirements.txt
+	uv sync 
 
 docker-build:
 	docker compose build

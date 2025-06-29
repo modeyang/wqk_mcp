@@ -6,9 +6,18 @@ from crawl4ai import AsyncWebCrawler, CrawlerRunConfig, DefaultMarkdownGenerator
 
 mcp = FastMCP('tavily')
 
-client = TavilyClient(api_key=config['TAVILY_API_KEY'])
+# 安全地获取 API 密钥，如果不存在则设置为 None
+tavily_api_key = config.get('TAVILY_API_KEY')
+client = None
 
-print(config['TAVILY_API_KEY'])
+if tavily_api_key:
+    try:
+        client = TavilyClient(api_key=tavily_api_key)
+        print(f"Tavily API Key configured: {tavily_api_key[:10]}...")
+    except Exception as e:
+        print(f"Failed to initialize Tavily client: {e}")
+else:
+    print("Warning: TAVILY_API_KEY not found in environment variables. Web search functionality will be disabled.")
 
 def web_search_tools():
     @mcp.tool()
@@ -24,13 +33,19 @@ def web_search_tools():
         }]
         '
         """
-        search_response = client.search(
-            query=query,
-            depth="standard",  # "standard" or "deep"
-            output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
-            structured_output_schema=None,  # must be filled if output_type is "structured"
-        )
-        return search_response
+        if client is None:
+            return "Error: Tavily API client not initialized. Please check your TAVILY_API_KEY configuration."
+        
+        try:
+            search_response = client.search(
+                query=query,
+                depth="standard",  # "standard" or "deep"
+                output_type="sourcedAnswer",  # "searchResults" or "sourcedAnswer" or "structured"
+                structured_output_schema=None,  # must be filled if output_type is "structured"
+            )
+            return search_response
+        except Exception as e:
+            return f"Error performing web search: {str(e)}"
 
     @mcp.tool()
     async def url_to_markdown(url: str) -> str:
